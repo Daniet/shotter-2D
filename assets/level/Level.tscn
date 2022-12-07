@@ -1,0 +1,71 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://assets/level/music/Common Fight.ogg" type="AudioStream" id=1]
+[ext_resource path="res://assets/level/sprites/desert-backgorund.png" type="Texture" id=2]
+[ext_resource path="res://assets/level/Level.gd" type="Script" id=3]
+[ext_resource path="res://assets/level/sprites/clouds.png" type="Texture" id=4]
+[ext_resource path="res://assets/player/Player.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/enemy/Enemy.tscn" type="PackedScene" id=6]
+[ext_resource path="res://assets/hud/HUB.tscn" type="PackedScene" id=7]
+
+[sub_resource type="Curve2D" id=1]
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 144, 1 )
+}
+
+[node name="Level" type="Node2D" groups=["level"]]
+script = ExtResource( 3 )
+Enemy = ExtResource( 6 )
+
+[node name="BgMusic" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 1 )
+volume_db = -10.0
+
+[node name="Background" type="ParallaxBackground" parent="."]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="Background"]
+motion_mirroring = Vector2( 0, 272 )
+
+[node name="Sprite" type="Sprite" parent="Background/ParallaxLayer"]
+texture = ExtResource( 2 )
+centered = false
+
+[node name="Clouds01" type="ParallaxBackground" parent="."]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="Clouds01"]
+motion_mirroring = Vector2( 0, 272 )
+
+[node name="Sprite" type="Sprite" parent="Clouds01/ParallaxLayer"]
+modulate = Color( 1, 1, 1, 0.313726 )
+texture = ExtResource( 4 )
+centered = false
+
+[node name="Clouds02" type="ParallaxBackground" parent="."]
+offset = Vector2( 0, 128 )
+transform = Transform2D( 1, 0, 0, 1, 0, 128 )
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="Clouds02"]
+motion_mirroring = Vector2( 0, 272 )
+
+[node name="Sprite" type="Sprite" parent="Clouds02/ParallaxLayer"]
+modulate = Color( 1, 1, 1, 0.313726 )
+texture = ExtResource( 4 )
+centered = false
+
+[node name="HUB" parent="." instance=ExtResource( 7 )]
+
+[node name="EnemyPath" type="Path2D" parent="."]
+curve = SubResource( 1 )
+
+[node name="EnemySpawn" type="PathFollow2D" parent="EnemyPath"]
+position = Vector2( -2, 0 )
+rotation = 0.00684921
+
+[node name="EnemyTimer" type="Timer" parent="."]
+
+[node name="Player" parent="." instance=ExtResource( 5 )]
+position = Vector2( 77, 222 )
+
+[connection signal="game_over" from="HUB" to="." method="_on_HUB_game_over"]
+[connection signal="timeout" from="EnemyTimer" to="." method="_on_EnemyTimer_timeout"]
+[connection signal="tree_exiting" from="Player" to="HUB" method="_on_Player_tree_exiting"]
